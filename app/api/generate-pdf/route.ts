@@ -3,6 +3,7 @@ import jsPDF from 'jspdf';
 import { v2 as cloudinary } from 'cloudinary';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import type { FirebaseApp } from 'firebase/app';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -12,8 +13,8 @@ cloudinary.config({
 });
 
 // Firebase configuration - optional for now
-let app: any = null;
-let db: any = null;
+let app: FirebaseApp | null = null;
+let db: ReturnType<typeof getFirestore> | null = null;
 
 try {
   const firebaseConfig = {
@@ -386,7 +387,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const headers: any = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="${filename}"`
     };

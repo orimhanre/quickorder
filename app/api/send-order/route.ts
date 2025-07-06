@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const { client, cartItems, selectedPriceType, comentario, fileUrl, fileName } = await request.json();
 
     // Create order details string similar to iOS app
-    const total = cartItems.reduce((sum: number, item: any) => {
+    const total = cartItems.reduce((sum: number, item: { selectedPrice: 'price1' | 'price2'; product: { price1: number; price2: number }; quantity: number }) => {
       const price = item.selectedPrice === 'price1' ? item.product.price1 : item.product.price2;
       return sum + (price * item.quantity);
     }, 0);

@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Client } from '@/types';
 
 interface ClientFormProps {
   onSubmit: (client: Client) => void;
   loading?: boolean;
-  selectedPriceType: 'price1' | 'price2';
+  initialClient?: Client;
 }
 
-export default function ClientForm({ onSubmit, loading = false, selectedPriceType }: ClientFormProps) {
-  const [client, setClient] = useState<Client>({
+export default function ClientForm({ onSubmit, loading = false, initialClient }: ClientFormProps) {
+  const [client, setClient] = useState<Client>(() => initialClient || {
     companyName: '',
     identification: '',
     name: '',
@@ -21,6 +21,22 @@ export default function ClientForm({ onSubmit, loading = false, selectedPriceTyp
     department: '',
     comentario: ''
   });
+
+  useEffect(() => {
+    if (initialClient) {
+      setClient({
+        companyName: initialClient.companyName || '',
+        identification: initialClient.identification || '',
+        name: initialClient.name || '',
+        surname: initialClient.surname || '',
+        phone: initialClient.phone || '',
+        address: initialClient.address || '',
+        city: initialClient.city || '',
+        department: initialClient.department || '',
+        comentario: initialClient.comentario || ''
+      });
+    }
+  }, [initialClient]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

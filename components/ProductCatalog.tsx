@@ -17,6 +17,7 @@ export default function ProductCatalog({ selectedPriceType, onAddToCart }: Produ
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [selectedColors, setSelectedColors] = useState<{ [key: string]: string }>({});
+  const [modalImage, setModalImage] = useState<string | null>(null);
 
   // Fetch real products from Airtable
   useEffect(() => {
@@ -82,10 +83,6 @@ export default function ProductCatalog({ selectedPriceType, onAddToCart }: Produ
     acc[product.brand].push(product);
     return acc;
   }, {} as Record<string, Product[]>);
-
-  const getPriceColor = () => {
-    return selectedPriceType === 'price1' ? 'text-green-600' : 'text-blue-600';
-  };
 
   const getProductCount = (brand: string) => {
     return products.filter(p => p.brand === brand).length;
@@ -220,6 +217,7 @@ export default function ProductCatalog({ selectedPriceType, onAddToCart }: Produ
                         handleColorChange={handleColorChange}
                         quantities={quantities}
                         selectedColors={selectedColors}
+                        setModalImage={setModalImage}
                       />
                     ))}
                 </div>
@@ -242,8 +240,27 @@ export default function ProductCatalog({ selectedPriceType, onAddToCart }: Produ
                 handleColorChange={handleColorChange}
                 quantities={quantities}
                 selectedColors={selectedColors}
+                setModalImage={setModalImage}
               />
             ))}
+        </div>
+      )}
+
+      {/* Modal for image preview */}
+      {modalImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" onClick={() => setModalImage(null)}>
+          <div className="relative" onClick={e => e.stopPropagation()}>
+            <img src={modalImage} alt="Vista previa" className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-lg" />
+            <button
+              onClick={() => setModalImage(null)}
+              className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-2 hover:bg-opacity-100 transition-colors"
+              aria-label="Cerrar"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-700">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -259,9 +276,10 @@ interface ProductCardProps {
   handleColorChange: (productId: string, color: string) => void;
   quantities: { [key: string]: number };
   selectedColors: { [key: string]: string };
+  setModalImage: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-function ProductCard({ product, selectedPriceType, onAddToCart, formatPrice, updateQuantity, handleColorChange, quantities, selectedColors }: ProductCardProps) {
+function ProductCard({ product, selectedPriceType, onAddToCart, formatPrice, updateQuantity, handleColorChange, quantities, selectedColors, setModalImage }: ProductCardProps) {
   const price = selectedPriceType === 'price1' ? product.price1 : product.price2;
 
   const getImageUrl = () => {
@@ -272,10 +290,6 @@ function ProductCard({ product, selectedPriceType, onAddToCart, formatPrice, upd
       return product.imageURL[0];
     }
     return '/placeholder-product.jpg';
-  };
-
-  const getPriceColor = () => {
-    return selectedPriceType === 'price1' ? 'text-green-600' : 'text-blue-600';
   };
 
   const quantity = quantities[product.id] || 1;
@@ -289,7 +303,8 @@ function ProductCard({ product, selectedPriceType, onAddToCart, formatPrice, upd
           <img
             src={getImageUrl()}
             alt={product.name}
-            className="w-20 h-20 object-cover rounded-lg"
+            className="w-20 h-20 object-cover rounded-lg cursor-pointer"
+            onClick={() => setModalImage(getImageUrl())}
             onError={(e) => {
               e.currentTarget.src = '/placeholder-product.jpg';
             }}
@@ -349,7 +364,7 @@ function ProductCard({ product, selectedPriceType, onAddToCart, formatPrice, upd
               {/* Price */}
               <div className="flex items-center mb-3">
                 <span className="text-sm text-gray-600 w-16">Precio:</span>
-                <span className={`font-bold text-lg ${getPriceColor()}`}>
+                <span className={`font-bold text-lg ${selectedPriceType === 'price1' ? 'text-green-600' : 'text-blue-600'}`}>
                   ${formatPrice(price)}
                 </span>
               </div>

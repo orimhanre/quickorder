@@ -96,7 +96,6 @@ export async function generateOrderPDF(orderData: OrderData): Promise<Buffer> {
 
       // Table Header
       const tableTop = doc.y;
-      const colWidths = [200, 80, 80, 80];
       const colX = [50, 250, 330, 410];
 
       doc.fontSize(10)
@@ -111,9 +110,8 @@ export async function generateOrderPDF(orderData: OrderData): Promise<Buffer> {
       doc.moveDown(1);
 
       // Table Rows
-      let currentY = doc.y;
       orderData.items.forEach((item, index) => {
-        const rowY = currentY + (index * 25);
+        const rowY = doc.y + (index * 25);
 
         doc.fontSize(9)
            .font('Helvetica')

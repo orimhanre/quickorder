@@ -7,7 +7,6 @@ import ClientForm from '../components/ClientForm';
 import OrderSummary from '../components/OrderSummary';
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [client, setClient] = useState<Client | null>(null);
   const [selectedPriceType, setSelectedPriceType] = useState<'price1' | 'price2'>('price1');
@@ -15,6 +14,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
 
   const addToCart = (product: Product, quantity: number, selectedColor: string) => {
     setCartItems(prev => {
@@ -122,12 +122,27 @@ export default function Home() {
     }
   };
 
-
-
   // Format price with thousand separators using dots and no decimals
   const formatPrice = (price: number) => {
     return Math.round(price).toLocaleString('de-DE');
   };
+
+  const availableBrands = [...new Set(products.map((p: Product) => p.brand))].sort();
+  const filteredProducts = products.filter((product: Product) => {
+    const matchesSearch = searchTerm === '' || 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.productDescription.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesBrand = selectedBrand === null || product.brand === selectedBrand;
+    return matchesSearch && matchesBrand;
+  });
+  const productsByBrand = filteredProducts.reduce((acc: Record<string, Product[]>, product: Product) => {
+    if (!acc[product.brand]) {
+      acc[product.brand] = [];
+    }
+    acc[product.brand].push(product);
+    return acc;
+  }, {} as Record<string, Product[]>);
 
   if (currentStep === 'client') {
     return (
@@ -141,7 +156,7 @@ export default function Home() {
               ← Volver a Productos
             </button>
           </div>
-          <ClientForm onSubmit={handleClientSubmit} selectedPriceType={selectedPriceType} />
+          <ClientForm onSubmit={handleClientSubmit} initialClient={client || undefined} />
         </div>
       </div>
     );
@@ -245,8 +260,8 @@ export default function Home() {
             >
               Todas las Marcas ({products.length})
             </button>
-            {products.map(p => p.brand).filter((brand, index, arr) => arr.indexOf(brand) === index).sort().map(brand => {
-              const count = products.filter(p => p.brand === brand).length;
+            {availableBrands.map(brand => {
+              const count = productsByBrand[brand].length;
               return (
                 <button
                   key={brand}

@@ -34,10 +34,6 @@ export default function OrderSummary({
     return selectedPriceType === 'price1' ? 'text-green-600' : 'text-blue-600';
   };
 
-  const getPriceLabel = () => {
-    return selectedPriceType === 'price1' ? 'Precio 1' : 'Precio 2';
-  };
-
   const handleGeneratePDF = () => {
     onGeneratePDF(comentario);
   };
