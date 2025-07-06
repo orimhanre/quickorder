@@ -13,7 +13,6 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState<'products' | 'client' | 'summary'>('products');
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   const addToCart = (product: Product, quantity: number, selectedColor: string) => {
     setCartItems(prev => {
