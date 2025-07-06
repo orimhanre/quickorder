@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Product, Client, CartItem } from '../types';
 import ProductCatalog from '../components/ProductCatalog';
 import ClientForm from '../components/ClientForm';
@@ -14,7 +14,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
 
   const addToCart = (product: Product, quantity: number, selectedColor: string) => {
     setCartItems(prev => {
@@ -90,7 +89,6 @@ export default function Home() {
         
         // Get Cloudinary URL from response headers
         const cloudinaryURL = response.headers.get('X-Cloudinary-URL');
-        const cloudinaryPublicId = response.headers.get('X-Cloudinary-Public-ID');
 
         // Order is automatically sent to Firestore in the PDF generation API (if configured)
         if (cloudinaryURL) {
@@ -126,23 +124,6 @@ export default function Home() {
   const formatPrice = (price: number) => {
     return Math.round(price).toLocaleString('de-DE');
   };
-
-  const availableBrands = [...new Set(products.map((p: Product) => p.brand))].sort();
-  const filteredProducts = products.filter((product: Product) => {
-    const matchesSearch = searchTerm === '' || 
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.productDescription.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBrand = selectedBrand === null || product.brand === selectedBrand;
-    return matchesSearch && matchesBrand;
-  });
-  const productsByBrand = filteredProducts.reduce((acc: Record<string, Product[]>, product: Product) => {
-    if (!acc[product.brand]) {
-      acc[product.brand] = [];
-    }
-    acc[product.brand].push(product);
-    return acc;
-  }, {} as Record<string, Product[]>);
 
   if (currentStep === 'client') {
     return (
@@ -242,40 +223,6 @@ export default function Home() {
                 )}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Brand Filter */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center space-x-2 overflow-x-auto">
-            <button
-              onClick={() => setSelectedBrand(null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
-                selectedBrand === null
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Todas las Marcas ({products.length})
-            </button>
-            {availableBrands.map(brand => {
-              const count = productsByBrand[brand].length;
-              return (
-                <button
-                  key={brand}
-                  onClick={() => setSelectedBrand(brand)}
-                  className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
-                    selectedBrand === brand
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {brand} ({count})
-                </button>
-              );
-            })}
           </div>
         </div>
       </div>

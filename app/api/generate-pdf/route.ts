@@ -51,14 +51,12 @@ export async function POST(request: NextRequest) {
     const contentWidth = pageWidth - 2 * margin;
 
     let yPosition = 30;
-    const lineHeight = 14;
-    let currentPage = 0;
+    let isEvenRow = false;
 
     // Helper function to add new page if needed
     const addNewPageIfNeeded = (requiredHeight: number) => {
       if (yPosition + requiredHeight > pageHeight - 100) {
         doc.addPage();
-        currentPage++;
         yPosition = 30;
         drawHeader();
       }
@@ -210,7 +208,6 @@ export async function POST(request: NextRequest) {
     doc.roundedRect(margin, yPosition, pageWidth - 2 * margin, 30, 5, 5, 'F');
     
     // Table headers - vertically centered
-    const columnWidths = [210, 80, 80, 80, 80];
     const columnX = [margin + 10, margin + 220, margin + 300, margin + 380, margin + 460];
     
     doc.setFontSize(12);
@@ -226,21 +223,20 @@ export async function POST(request: NextRequest) {
     // Add products
     let total = 0;
     let totalItems = 0;
-    let isEvenRow = false;
 
     // Sort items by brand and name (like iOS app)
-    const sortedItems = cartItems.sort((a: any, b: any) => {
-      if (a.product.brand.toLowerCase() === b.product.brand.toLowerCase()) {
-        return a.product.name.toLowerCase().localeCompare(b.product.name.toLowerCase());
+    const sortedItems = cartItems.sort((a: unknown, b: unknown) => {
+      if ((a as any).product.brand.toLowerCase() === (b as any).product.brand.toLowerCase()) {
+        return (a as any).product.name.toLowerCase().localeCompare((b as any).product.name.toLowerCase());
       }
-      return a.product.brand.toLowerCase().localeCompare(b.product.brand.toLowerCase());
+      return (a as any).product.brand.toLowerCase().localeCompare((b as any).product.brand.toLowerCase());
     });
 
-    sortedItems.forEach((item: any) => {
-      const price = item.selectedPrice === 'price1' ? item.product.price1 : item.product.price2;
-      const itemTotal = price * item.quantity;
+    sortedItems.forEach((item: unknown) => {
+      const price = (item as any).selectedPrice === 'price1' ? (item as any).product.price1 : (item as any).product.price2;
+      const itemTotal = price * (item as any).quantity;
       total += itemTotal;
-      totalItems += item.quantity;
+      totalItems += (item as any).quantity;
 
       addNewPageIfNeeded(25);
 
@@ -260,16 +256,16 @@ export async function POST(request: NextRequest) {
       doc.setFont('helvetica', 'normal');
 
       // Product name with brand
-      const productText = `${item.product.brand} (${item.product.name})`;
+      const productText = `${(item as any).product.brand} (${(item as any).product.name})`;
       doc.text(productText, columnX[0], yPosition + 8);
 
       // Color
-      doc.text(item.selectedColor || '', columnX[1] + 20, yPosition + 8);
+      doc.text((item as any).selectedColor || '', columnX[1] + 20, yPosition + 8);
 
       // Quantity
-      const quantityColor = item.selectedPrice === 'price1' ? [0, 128, 0] : [0, 122, 255]; // Green for price1, blue for price2
+      const quantityColor = (item as any).selectedPrice === 'price1' ? [0, 128, 0] : [0, 122, 255]; // Green for price1, blue for price2
       doc.setTextColor(quantityColor[0], quantityColor[1], quantityColor[2]);
-      doc.text(item.quantity.toString(), columnX[2] + 20, yPosition + 8);
+      doc.text((item as any).quantity.toString(), columnX[2] + 20, yPosition + 8);
 
       // Reset text color to black for other columns
       doc.setTextColor(0, 0, 0);

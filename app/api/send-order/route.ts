@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, FieldValue, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 // Firebase configuration - you'll need to add these environment variables
 const firebaseConfig = {
