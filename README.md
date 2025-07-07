@@ -1,4 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# quickorder
+
+A modern order management web app built with Next.js, Firebase, and Cloudinary.
+
+## Features
+
+- Multi-step order forms (DistriNaranjos1 & DistriNaranjos2)
+- Product selection, client info, and order summary flows
+- PDF generation and Cloudinary upload
+- Firebase integration for order storage
+- Modern, accessible UI/UX
+
+---
 
 ## Getting Started
 

@@ -96,7 +96,8 @@ export async function POST(request: NextRequest) {
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
-        day: 'numeric' 
+        day: 'numeric',
+        timeZone: 'America/Bogota' // Ensure correct timezone
       });
       const dateWidth = doc.getTextWidth(dateString);
       doc.text(dateString, pageWidth - margin - dateWidth, yPosition + 50);
@@ -105,7 +106,8 @@ export async function POST(request: NextRequest) {
       const timeString = new Date().toLocaleTimeString('es-CO', { 
         hour: '2-digit', 
         minute: '2-digit',
-        hour12: true 
+        hour12: true,
+        timeZone: 'America/Bogota' // Ensure correct timezone
       });
       const timeWidth = doc.getTextWidth(timeString);
       doc.text(timeString, pageWidth - margin - timeWidth, yPosition + 65);
@@ -314,11 +316,13 @@ export async function POST(request: NextRequest) {
 
     // Generate current date and time for filename
     const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
+    // Convert to Bogota time
+    const bogotaNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+    const day = String(bogotaNow.getDate()).padStart(2, '0');
+    const month = String(bogotaNow.getMonth() + 1).padStart(2, '0');
+    const year = bogotaNow.getFullYear();
+    const hours = String(bogotaNow.getHours()).padStart(2, '0');
+    const minutes = String(bogotaNow.getMinutes()).padStart(2, '0');
     const companyName = client?.companyName || 'Cliente';
     const filename = `${companyName} - ${day}.${month}.${year}_${hours}.${minutes}.pdf`;
 
