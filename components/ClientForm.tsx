@@ -138,7 +138,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
                 id="companyName"
                 value={client.companyName}
                 onChange={(e) => handleInputChange('companyName', e.target.value)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-600 text-red-600 transition-all duration-200 ease-in-out"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-600 focus:border-2 text-red-600 transition-all duration-200 ease-in-out focus:!border-red-600"
                 placeholder="Ingrese la empresa o tienda"
                 aria-label="Empresa o Tienda"
                 aria-required="true"
@@ -154,7 +154,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
                 id="identification"
                 value={client.identification}
                 onChange={(e) => handleInputChange('identification', e.target.value)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-black transition-all duration-200 ease-in-out"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black focus:border-2 text-black transition-all duration-200 ease-in-out focus:!border-black"
                 placeholder="Ingrese la cédula"
                 aria-label="Cédula"
                 aria-required="true"
@@ -170,7 +170,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
                 id="name"
                 value={client.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-black transition-all duration-200 ease-in-out"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black focus:border-2 text-black transition-all duration-200 ease-in-out focus:!border-black"
                 placeholder="Ingrese el nombre(s)"
                 autoCapitalize="words"
                 aria-label="Nombre(s)"
@@ -187,7 +187,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
                 id="surname"
                 value={client.surname}
                 onChange={(e) => handleInputChange('surname', e.target.value)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-black transition-all duration-200 ease-in-out"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black focus:border-2 text-black transition-all duration-200 ease-in-out focus:!border-black"
                 placeholder="Ingrese el apellido(s)"
                 autoCapitalize="words"
                 aria-label="Apellido(s)"
@@ -204,7 +204,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
                 id="phone"
                 value={client.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-blue-600 transition-all duration-200 ease-in-out"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 focus:border-2 text-blue-600 transition-all duration-200 ease-in-out focus:!border-blue-600"
                 placeholder="Ingrese el número de teléfono"
                 aria-label="Teléfono"
                 aria-required="true"
@@ -227,7 +227,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
                 id="address"
                 value={client.address}
                 onChange={(e) => handleInputChange('address', e.target.value)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-amber-700 transition-all duration-200 ease-in-out"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-amber-700 focus:border-2 text-amber-700 transition-all duration-200 ease-in-out focus:!border-amber-700"
                 placeholder="Ingrese la calle o carretera"
                 aria-label="Calle o Carretera"
                 aria-required="true"
@@ -243,7 +243,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
                 id="city"
                 value={client.city}
                 onChange={(e) => handleInputChange('city', e.target.value)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-amber-700 transition-all duration-200 ease-in-out"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-amber-700 focus:border-2 text-amber-700 transition-all duration-200 ease-in-out focus:!border-amber-700"
                 placeholder="Ingrese la ciudad o pueblo"
                 aria-label="Ciudad o Pueblo"
                 aria-required="true"
@@ -259,7 +259,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
                 id="department"
                 value={client.department}
                 onChange={(e) => handleInputChange('department', e.target.value)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-amber-700 text-amber-700 transition-all duration-200 ease-in-out"
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-amber-700 focus:border-2 text-amber-700 transition-all duration-200 ease-in-out focus:!border-amber-700"
                 placeholder="Ingrese el departamento"
                 aria-label="Departamento"
                 aria-required="true"
@@ -280,7 +280,7 @@ export default function ClientForm({ onSubmit, loading = false, initialClient, s
               rows={3}
               value={client.comentario}
               onChange={(e) => handleInputChange('comentario', e.target.value)}
-              className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600 text-green-600 resize-none transition-all duration-200 ease-in-out"
+              className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600 focus:border-2 text-green-600 resize-none transition-all duration-200 ease-in-out focus:!border-green-600"
               placeholder="Ingrese comentarios adicionales u observaciones"
               aria-label="Comentarios u Observaciones"
               aria-required="false"
