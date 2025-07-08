@@ -153,6 +153,25 @@ export async function generateOrderPDF(orderData: OrderData): Promise<Buffer> {
          .text('TOTAL:', colX[2], totalY)
          .text(`$${total.toFixed(2)}`, colX[3], totalY);
 
+      doc.moveDown(2);
+
+      // Comentario section (if exists)
+      if (orderData.comentario && orderData.comentario.trim() !== '') {
+        doc.fontSize(14)
+           .font('Helvetica-Bold')
+           .fillColor('#1e40af')
+           .text('Comentarios:');
+        doc.moveDown(0.5);
+        doc.fontSize(11)
+           .font('Helvetica')
+           .fillColor('#374151');
+        // Split comentario by line breaks and render each line
+        orderData.comentario.split(/\r?\n/).forEach(line => {
+          doc.text(line);
+        });
+        doc.moveDown(1.5);
+      }
+
       doc.moveDown(3);
 
       // Footer

@@ -30,10 +30,9 @@ export default function DistriNaranjos1Form() {
   const selectedPriceType = 'price1';
   const cartModalContentRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pdfFilename, setPdfFilename] = useState<string>('pedido.pdf');
-  const [showToastOverlay, setShowToastOverlay] = useState(false);
+  const [showOrderSuccessModal, setShowOrderSuccessModal] = useState(false);
 
   // Initialize client-side state from localStorage
   useEffect(() => {
@@ -84,6 +83,12 @@ export default function DistriNaranjos1Form() {
       console.log('💾 Saving DistriNaranjos1 client:', client.name || 'empty');
     }
   }, [client, isClient]);
+
+  useEffect(() => {
+    if (currentStep === 'summary') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentStep]);
 
   const addToCart = (product: Product, quantity: number, selectedColor: string) => {
     setCartItems(prev => {
@@ -143,67 +148,40 @@ export default function DistriNaranjos1Form() {
           if (filenameMatch) filename = filenameMatch[1];
         }
         const cloudinaryURL = response.headers.get('X-Cloudinary-URL');
+        
+        // Get the PDF buffer from the response
+        const pdfBuffer = await response.arrayBuffer();
+        const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
+        
+        // Send order to Firestore and trigger email notification
+        try {
+          const sendOrderResponse = await fetch('/api/send-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              client, 
+              cartItems, 
+              selectedPriceType, 
+              comentario, 
+              fileUrl: cloudinaryURL,
+              fileName: filename,
+              pdfBuffer: pdfBase64
+            }),
+          });
+          
+          if (sendOrderResponse.ok) {
+            console.log('✅ Order sent to Firestore and email notification triggered');
+          } else {
+            console.error('❌ Error sending order to Firestore');
+          }
+        } catch (sendOrderError) {
+          console.error('❌ Error sending order:', sendOrderError);
+        }
+        
         if (cloudinaryURL) {
           setPdfUrl(cloudinaryURL);
           setPdfFilename(filename);
-          setShowSuccessModal(true);
-          setShowToastOverlay(true);
-          toast.custom((t) => (
-            <div
-              className="flex flex-col gap-4 p-4 rounded-xl shadow-lg border-l-8 border-orange-500 relative min-w-[320px] max-w-[400px] bg-orange-400"
-              style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.10)' }}
-              role="alert"
-            >
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 text-2xl">✔️</span>
-                <div>
-                  <div className="font-bold text-lg text-green-700">¡Pedido enviado!</div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2 mt-2">
-                <button
-                  onClick={() => {
-                    const a = document.createElement('a');
-                    a.href = cloudinaryURL;
-                    a.download = filename;
-                    a.target = '_blank';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                  }}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-base shadow-sm border border-green-700"
-                  aria-label="Descargar Pedido en PDF"
-                >
-                  ¡Descargar Pedido en PDF!
-                </button>
-                <button
-                  onClick={() => {
-                    toast.dismiss(t.id);
-                    setShowSuccessModal(false);
-                    setShowToastOverlay(false);
-                    setCurrentStep('products');
-                    setCartItems([]);
-                    setClient({
-                      companyName: '',
-                      identification: '',
-                      name: '',
-                      surname: '',
-                      phone: '',
-                      address: '',
-                      city: '',
-                      department: '',
-                      comentario: ''
-                    });
-                  }}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-base shadow-sm border border-red-700"
-                  aria-label="Salir"
-                >
-                  ¡Salir!
-                </button>
-              </div>
-            </div>
-          ), { duration: 60000, position: 'bottom-center' });
-          setTimeout(() => setShowToastOverlay(false), 60000);
+          setShowOrderSuccessModal(true);
         } else {
           toast.success('✅ ¡Pedido procesado exitosamente! El PDF se ha generado pero no se pudo subir a la nube.');
         }
@@ -593,19 +571,50 @@ export default function DistriNaranjos1Form() {
         </div>
       )}
 
-      {showSuccessModal && (
-        <>
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-60"></div>
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="bg-white rounded-xl shadow-xl p-4 flex flex-col items-center gap-4 w-full max-w-xs">
-              <span className="text-5xl text-green-600">✔️</span>
-              <div className="font-medium text-[18px] text-green-700 text-center whitespace-nowrap">¡Pedido enviado exitosamente!</div>
-            </div>
+      {/* Order Success Modal */}
+      {showOrderSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[100]">
+          <div className="bg-white rounded-2xl shadow-2xl px-8 py-8 flex flex-col items-center max-w-sm w-full border-4 border-green-600 relative">
+            <svg className="w-16 h-16 text-green-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <h2 className="text-2xl font-bold text-green-700 mb-2 text-center">¡Pedido enviado con éxito!</h2>
+            <p className="text-gray-700 text-center mb-4">Gracias por tu pedido.</p>
+            <a
+              href={pdfUrl || '#'}
+              download={pdfFilename}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-base shadow-sm border border-green-700 text-center mb-2"
+              aria-label="Descargar Pedido en PDF"
+            >
+              ¡Descargar Pedido en PDF!
+            </a>
+            <button
+              onClick={() => {
+                setShowOrderSuccessModal(false);
+                setCurrentStep('products');
+                setCartItems([]);
+                setClient({
+                  companyName: '',
+                  identification: '',
+                  name: '',
+                  surname: '',
+                  phone: '',
+                  address: '',
+                  city: '',
+                  department: '',
+                  comentario: ''
+                });
+              }}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-base shadow-sm border border-red-700 text-center"
+              aria-label="Salir"
+            >
+              ¡Salir!
+            </button>
           </div>
-        </>
+        </div>
       )}
-
-      {showToastOverlay && <div className="fixed inset-0 z-40 bg-black bg-opacity-60"></div>}
     </div>
   );
 } 

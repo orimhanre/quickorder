@@ -193,11 +193,18 @@ export async function POST(request: NextRequest) {
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(0, 0, 0);
       doc.text('COMENTARIO:', margin + clientBoxWidth + 30, yPosition + 15);
-      
+
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(100, 100, 100);
-      doc.text('N/A', margin + clientBoxWidth + 30, yPosition + 35);
+      if (comentario && comentario.trim() !== '') {
+        // Split comentario by line breaks and render each line
+        comentario.split(/\r?\n/).forEach((line: string, idx: number) => {
+          doc.text(line, margin + clientBoxWidth + 30, yPosition + 35 + idx * 13);
+        });
+      } else {
+        doc.text('N/A', margin + clientBoxWidth + 30, yPosition + 35);
+      }
       
       yPosition += 170; // More space after client section
     }
@@ -346,46 +353,46 @@ export async function POST(request: NextRequest) {
       console.log('ℹ️ PDF will be generated but not uploaded to Cloudinary');
     }
 
-    // Send order to Firestore (matching iOS app structure) - only if Firebase is configured
-    if (db && cloudinaryResponse) {
-      try {
-        const orderDetails = `Cliente: ${client.companyName || 'N/A'} | Total: ${Math.round(total).toLocaleString('de-DE')} | Tipo: ${selectedPriceType === 'price1' ? 'Precio 1' : 'Precio 2'} | Comentario: ${comentario || 'N/A'}`;
+    // Remove Firestore saving from here - it will be handled by send-order endpoint
+    // if (db && cloudinaryResponse) {
+    //   try {
+    //     const orderDetails = `Cliente: ${client.companyName || 'N/A'} | Total: ${Math.round(total).toLocaleString('de-DE')} | Tipo: ${selectedPriceType === 'price1' ? 'Precio 1' : 'Precio 2'} | Comentario: ${comentario || 'N/A'}`;
 
-        const orderData = {
-          userId: 'web-client',
-          userName: client.companyName || client.name || 'Cliente Web',
-          timestamp: serverTimestamp(),
-          orderDetails: orderDetails,
-          fileUrl: cloudinaryResponse.secure_url,
-          fileName: filename,
-          deliveredTo: ['ZXV4MSAsQEeGUzSm5YMj7FICXII3'], // iOS app user ID
-          readBy: []
-        };
+    //     const orderData = {
+    //       userId: 'web-client',
+    //       userName: client.companyName || client.name || 'Cliente Web',
+    //       timestamp: serverTimestamp(),
+    //       orderDetails: orderDetails,
+    //       fileUrl: cloudinaryResponse.secure_url,
+    //       fileName: filename,
+    //       deliveredTo: ['ZXV4MSAsQEeGUzSm5YMj7FICXII3'], // iOS app user ID
+    //       readBy: []
+    //     };
 
-        const docRef = await addDoc(collection(db, 'orders'), orderData);
-        console.log('✅ Order sent to Firestore successfully');
-        console.log('📄 PDF URL:', cloudinaryResponse.secure_url);
-        console.log('📄 Filename:', filename);
-        console.log('📄 Order ID:', docRef.id);
-        console.log('📄 Order Data:', JSON.stringify(orderData, null, 2));
-        console.log('📄 Collection: orders');
-        console.log('📄 Firestore Project ID: quickorder-b33b4');
-        console.log('📄 Test: Order should be visible to iOS app');
-        console.log('📄 iOS User ID: ZXV4MSAsQEeGUzSm5YMj7FICXII3');
-        console.log('📄 Web Order User ID: web-client');
-        console.log('📄 Delivered To: ZXV4MSAsQEeGUzSm5YMj7FICXII3');
-      } catch (firestoreError) {
-        console.error('❌ Error sending to Firestore:', firestoreError);
-        // Continue with PDF generation even if Firestore fails
-      }
-    } else {
-      if (!db) {
-        console.log('ℹ️ Firebase not configured - order not sent to Firestore');
-      }
-      if (!cloudinaryResponse) {
-        console.log('ℹ️ Cloudinary upload failed - order not sent to Firestore');
-      }
-    }
+    //     const docRef = await addDoc(collection(db, 'orders'), orderData);
+    //     console.log('✅ Order sent to Firestore successfully');
+    //     console.log('📄 PDF URL:', cloudinaryResponse.secure_url);
+    //     console.log('📄 Filename:', filename);
+    //     console.log('📄 Order ID:', docRef.id);
+    //     console.log('📄 Order Data:', JSON.stringify(orderData, null, 2));
+    //     console.log('📄 Collection: orders');
+    //     console.log('📄 Firestore Project ID: quickorder-b33b4');
+    //     console.log('📄 Test: Order should be visible to iOS app');
+    //     console.log('📄 iOS User ID: ZXV4MSAsQEeGUzSm5YMj7FICXII3');
+    //     console.log('📄 Web Order User ID: web-client');
+    //     console.log('📄 Delivered To: ZXV4MSAsQEeGUzSm5YMj7FICXII3');
+    //   } catch (firestoreError) {
+    //     console.error('❌ Error sending to Firestore:', firestoreError);
+    //     // Continue with PDF generation even if Firestore fails
+    //   }
+    // } else {
+    //   if (!db) {
+    //     console.log('ℹ️ Firebase not configured - order not sent to Firestore');
+    //   }
+    //   if (!cloudinaryResponse) {
+    //     console.log('ℹ️ Cloudinary upload failed - order not sent to Firestore');
+    //   }
+    // }
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/pdf',

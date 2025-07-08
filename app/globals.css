@@ -36,31 +36,27 @@ body {
   overflow: hidden;
 }
 
-/* Ensure placeholder behavior works correctly */
+/* Ensure border is always visible on focus */
+input:focus, textarea:focus {
+  border-width: 2px !important;
+  border-style: solid !important;
+  border-color: #2563eb !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.15) !important;
+  background-color: #fff !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input, textarea {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d1d5db; /* gray-300, or your preferred color */
+  border-radius: 0.375rem; /* rounded-md */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
 input::placeholder,
 textarea::placeholder {
-  opacity: 1;
+  opacity: 0.3;
   color: #9ca3af;
-  transition: opacity 0.15s ease-in-out;
-}
-
-input:focus::placeholder,
-textarea:focus::placeholder {
-  opacity: 0;
-}
-
-/* For better placeholder behavior on different browsers */
-input:focus::-webkit-input-placeholder,
-textarea:focus::-webkit-input-placeholder {
-  opacity: 0;
-}
-
-input:focus::-moz-placeholder,
-textarea:focus::-moz-placeholder {
-  opacity: 0;
-}
-
-input:focus:-ms-input-placeholder,
-textarea:focus:-ms-input-placeholder {
-  opacity: 0;
 }
